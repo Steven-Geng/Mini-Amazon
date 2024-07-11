@@ -16,17 +16,36 @@ This is the final project for Duke University ECE 568: Engineering Robust Server
 
 ## Project Description
 
-For this project, you will either be doing “mini-Amazon” (an online store) or “mini-UPS” (a shipping website). If you are doing Amazon, you will have to make your system work with the UPS systems in your interoperability group (IG)—2 groups doing Amazon and 2 groups doing UPS.
+### Backend
+
+The backend of the Mini Amazon system is implemented in Java and uses Gradle for build automation and project management. It handles core logic, database operations, and communication with both the simulated world and the mini UPS system via Sockets.
+
+### Frontend
+
+The frontend of the Mini Amazon system is built using the Django framework. It provides a web interface for customers to browse products, place orders, and track shipments.
+
+### Database
+
+We use PostgreSQL RDBMS and access it via JDBC.
 
 ### The “World”
 
-Since you won’t have access to real warehouses and trucks, your code will interact with a simulated world provided for you. You will connect to the simulation server (port 12345 for UPS, port 23456 for Amazon), and send commands and receive notifications.
+Since we won’t have access to real warehouses and trucks, our code will interact with a simulated world provided for us. We will connect to the simulation server, and send commands and receive notifications.
 
-The messages you can send and receive are in the .proto files (amazon.proto and ups.proto) that will be provided. Notice that all messages either start with A or U to indicate which part they belong to.
+The messages we can send and receive are in the .proto files (amazon.proto and ups.proto). Notice that all messages either start with A or U to indicate which part they belong to.
 
 ### Basic Workflow
 
-The basic flow is that you send an A/UConnect message with the worldid that you want and receive an A/UConnected response. Note only ONE Amazon and ONE UPS is allowed to connect to a world at the same. Upon successful connection, the result string in A/UConnected will be “connected!”, otherwise it will be an error message starting with “error:”. Make sure your result string is “connected!” before proceeding to any further actions. Once you have received this response, you may send A/UCommands and receive A/Responses. You should not send any other message, nor expect to receive any – all of the details are embedded in the A/UCommands/Responses.
+1. Amazon and UPS connect to the same world
+2. Amazon receives a purchase request
+3. Amazon notifies UPS that a vehicle is needed and notifies the world to pack the goods
+4. UPS informs Amazon when the vehicle arrives and the world informs Amazon when the goods are packed
+5. Amazon notifies the world to start loading
+6. The world informs Amazon that loading is complete
+7. Amazon notifies UPS to start delivery
+8. UPS informs Amazon that the delivery is complete
+
+We independently designed the communication protocol between Amazon and UPS, which can be found in backend/app/src/main/resources/amazon_ups.proto.
 
 ### Commands and Responses
 
@@ -73,10 +92,6 @@ The basic flow is that you send an A/UConnect message with the worldid that you 
    - Specify delivery address.
    - Provide tracking number.
 3. **Product Differentiation**: Add unique features to make your product stand out.
-
-### Running the Project
-
-Ensure the project can be run with `docker-compose up`. Separate Docker stacks for Amazon and UPS should be used, with appropriate configurations for the world server connection.
 
 ## Conclusion
 
