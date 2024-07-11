@@ -1,93 +1,84 @@
-# ERSS-project-hg161-zw297
+# Mini Amazon
 
+## Project Overview
 
+This is the final project for Duke University ECE 568: Engineering Robust Server Software course. The project involves developing an online store system called "Mini Amazon." The system needs to interoperate with UPS systems as part of the interoperability group (IG) consisting of two Amazon groups and two UPS groups.
 
-## Getting started
+## Authors
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+- **Haoyuan Geng** - Backend Development
+- **Zichun Wang** - Frontend Development
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+## Contact Information
 
-## Add your files
+- Haoyuan Geng: [steven.h.geng@gmail.com](mailto:steven.h.geng@gmail.com)
+- Zichun Wang: [zichunwang733@gmail.com](mailto:zichunwang733@gmail.com)
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+## Project Description
 
-```
-cd existing_repo
-git remote add origin https://gitlab.oit.duke.edu/hg161/erss-project-hg161-zw297.git
-git branch -M main
-git push -uf origin main
-```
+For this project, you will either be doing “mini-Amazon” (an online store) or “mini-UPS” (a shipping website). If you are doing Amazon, you will have to make your system work with the UPS systems in your interoperability group (IG)—2 groups doing Amazon and 2 groups doing UPS.
 
-## Integrate with your tools
+### The “World”
 
-- [ ] [Set up project integrations](https://gitlab.oit.duke.edu/hg161/erss-project-hg161-zw297/-/settings/integrations)
+Since you won’t have access to real warehouses and trucks, your code will interact with a simulated world provided for you. You will connect to the simulation server (port 12345 for UPS, port 23456 for Amazon), and send commands and receive notifications.
 
-## Collaborate with your team
+The messages you can send and receive are in the .proto files (amazon.proto and ups.proto) that will be provided. Notice that all messages either start with A or U to indicate which part they belong to.
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+### Basic Workflow
 
-## Test and Deploy
+The basic flow is that you send an A/UConnect message with the worldid that you want and receive an A/UConnected response. Note only ONE Amazon and ONE UPS is allowed to connect to a world at the same. Upon successful connection, the result string in A/UConnected will be “connected!”, otherwise it will be an error message starting with “error:”. Make sure your result string is “connected!” before proceeding to any further actions. Once you have received this response, you may send A/UCommands and receive A/Responses. You should not send any other message, nor expect to receive any – all of the details are embedded in the A/UCommands/Responses.
 
-Use the built-in continuous integration in GitLab.
+### Commands and Responses
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+#### Amazon Commands
 
-***
+- **buy**: Request more products to be delivered to a warehouse.
+- **topack**: Pack a shipment for delivery.
+- **load**: Load a shipment onto a truck.
+- **queries**: Ask the status of a package.
 
-# Editing this README
+#### Amazon Responses
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+- **arrived**: Notification that your orders have arrived.
+- **ready**: Notification that packing is complete.
+- **loaded**: Notification that a shipment is loaded onto a truck.
+- **packagestatus**: Status of the package.
+- **error**: Indicates a failure to meet command requirements.
 
-## Suggestions for a good README
+#### UPS Commands
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+- **deliveries**: Send a truck to deliver a package.
+- **pickups**: Send a truck to a warehouse to pick up a package.
+- **queries**: Ask the status of a truck.
 
-## Name
-Choose a self-explaining name for your project.
+#### UPS Responses
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+- **completions**: Notification that a truck has reached its destination or completed deliveries.
+- **delivered**: Notification that a package is delivered.
+- **truckstatus**: Status of a truck.
+- **error**: Indicates a failure to meet command requirements.
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+### Additional Information
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+- **Simulation Speed**: You can adjust the simulation speed for testing purposes.
+- **Acknowledgement Mechanism**: Implement ack numbers to avoid losing in-flight messages.
+- **Google Protocol Buffer Message Format**: Use GPB for message formatting and communication.
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+### Features to Implement
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+1. **Basic Functionality**: Purchase an item and ensure its delivery.
+2. **Useful Features**:
+   - Searchable catalog of products.
+   - Order status checking.
+   - Specify delivery address.
+   - Provide tracking number.
+3. **Product Differentiation**: Add unique features to make your product stand out.
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+### Running the Project
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+Ensure the project can be run with `docker-compose up`. Separate Docker stacks for Amazon and UPS should be used, with appropriate configurations for the world server connection.
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+## Conclusion
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+This project aims to develop a robust and functional online store system that can effectively interoperate with a shipping system, demonstrating skills in backend and frontend development, as well as system integration.
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
